@@ -56,14 +56,14 @@ $CubeCharColor = @(
 )
 
 
-class CubeState : System.IEquatable[Object] {
+class IICubeState : System.IEquatable[Object] {
     [int[]]$cc  # センターカラー。@(上, 前, 右, 裏, 左, 下)
     [int[]]$cp  # コーナー位置
     [int[]]$co  # コーナー方向
     [int[]]$ep  # エッジ位置
     [int[]]$eo  # エッジ方向
 
-    CubeState() {
+    IICubeState() {
         # 白上、緑前
         $this.cc = @(0..5)
         $this.cp = @(0..7)
@@ -72,7 +72,7 @@ class CubeState : System.IEquatable[Object] {
         $this.eo = @(0) * 12
     }
 
-    CubeState([int[]]$cc, [int[]]$cp, [int[]]$co, [int[]]$ep, [int[]]$eo) {
+    IICubeState([int[]]$cc, [int[]]$cp, [int[]]$co, [int[]]$ep, [int[]]$eo) {
         $this.cc = $cc
         $this.cp = $cp
         $this.co = $co
@@ -88,7 +88,7 @@ class CubeState : System.IEquatable[Object] {
                (Compare-Object $this.eo $obj.eo -SyncWindow 0) -eq 0
     }
 
-    [CubeState] Clone() {
+    [IICubeState] Clone() {
         $cube = @{}
 
         $cube.cc = $this.cc.Clone()
@@ -100,7 +100,7 @@ class CubeState : System.IEquatable[Object] {
         return $cube
     }
 
-    static [CubeState] CreateFromFile([string]$FilePath) {
+    static [IICubeState] CreateFromFile([string]$FilePath) {
         return Get-Content -Path $FilePath -Raw -ErrorAction Stop | ConvertFrom-Json
     }
 
@@ -113,15 +113,15 @@ class CubeState : System.IEquatable[Object] {
         return "cc: " + $this.cc + "`ncp: " + $this.cp + "`nco: " + $this.co + "`nep: " + $this.ep + "`neo: " + $this.eo
     }
 
-    static [CubeState] op_Multiply([CubeState]$State, [CubeState]$Move) {
+    static [IICubeState] op_Multiply([IICubeState]$State, [IICubeState]$Move) {
         return $State.ApplyMove($Move)
     }
 
-    static [CubeState] op_Multiply([CubeState]$State, [string]$MoveStr) {
+    static [IICubeState] op_Multiply([IICubeState]$State, [string]$MoveStr) {
         return $State.ApplyMoves($MoveStr)
     }
 
-    [CubeState] ApplyMove([CubeState]$Move) {
+    [IICubeState] ApplyMove([IICubeState]$Move) {
         $cube = @{}
 
         $cube.cc = $Move.cc.foreach({$this.cc[$_]})
@@ -133,7 +133,7 @@ class CubeState : System.IEquatable[Object] {
         return $cube
     }
 
-    [CubeState] ApplyMoves([string]$MoveStr) {
+    [IICubeState] ApplyMoves([string]$MoveStr) {
         $cube = $this.Clone()
 
         $MoveStr.Split().foreach({
@@ -189,21 +189,26 @@ class CubeState : System.IEquatable[Object] {
     }
 
     Write() {
-        $this | Write-Cube
+        $this | Write-IICube
     }
 }
 
 
-function Get-PrimeMove {
+function New-IICube {
+    [IICubeState]::new()
+}
+
+
+function Get-IICubePrimeMove {
 
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [CubeState]$Move
+        [IICubeState]$Move
     )
 
     process {
-        $solved_cube = [CubeState]::new()
+        $solved_cube = [IICubeState]::new()
 
         $state0 = $solved_cube.ApplyMove($Move)
         $state = $state0
@@ -220,12 +225,12 @@ function Get-PrimeMove {
 }
 
 
-function Write-Cube {
+function Write-IICube {
 
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
-        [CubeState]$Cube
+        [IICubeState]$Cube
     )
 
     process {
@@ -280,7 +285,7 @@ function Write-Cube {
 
 
 $CubeMoves = @{
-    "x" = [CubeState]@{
+    "x" = [IICubeState]@{
         cc = @(1, 5, 2, 0, 4, 3)
         cp = @(3, 2, 6, 7, 0, 1, 5, 4)
         co = @(2, 1, 2, 1, 1, 2, 1, 2)
@@ -288,7 +293,7 @@ $CubeMoves = @{
         eo = @(0, 0, 0,  0, 1, 0,  1, 0, 1, 0, 1, 0)
     }
 
-    "y" = [CubeState]@{
+    "y" = [IICubeState]@{
         cc = @(0, 2, 3, 4, 1, 5)
         cp = @(3, 0, 1, 2, 7, 4, 5, 6)
         co = @(0) * 8
@@ -296,7 +301,7 @@ $CubeMoves = @{
         eo = @(1, 1, 1, 1, 0, 0, 0, 0,  0, 0, 0,  0)
     }
 
-    "U" = [CubeState]@{
+    "U" = [IICubeState]@{
         cc = @(0..5)
         cp = @(3, 0, 1, 2, 4, 5, 6, 7)
         co = @(0) * 8
@@ -305,7 +310,7 @@ $CubeMoves = @{
     }
 }
 
-$Solved = [CubeState]::new()
+$Solved = [IICubeState]::new()
 
 $CubeMoves["z"] = $Solved * "y y y x y"
 
