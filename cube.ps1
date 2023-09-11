@@ -137,8 +137,8 @@ class IICubeState : System.IEquatable[Object] {
         $cube = $this.Clone()
 
         $MoveStr.Split().foreach({
-            if ($script:CubeMoves.ContainsKey($_)) {
-                $cube = $cube.ApplyMove($script:CubeMoves[$_])
+            if ($global:IICubeMoves.ContainsKey($_)) {
+                $cube = $cube.ApplyMove($global:IICubeMoves[$_])
             } else {
                 Write-Warning -Message ("無効なキューブ操作:" + $_)
             }
@@ -283,56 +283,58 @@ function Write-IICube {
     }
 }
 
+$global:IICubeMoves = [System.Collections.Hashtable]::new()
 
-$CubeMoves = @{
-    "x" = [IICubeState]@{
-        cc = @(1, 5, 2, 0, 4, 3)
-        cp = @(3, 2, 6, 7, 0, 1, 5, 4)
-        co = @(2, 1, 2, 1, 1, 2, 1, 2)
-        ep = @(7, 5, 9, 11, 6, 2, 10, 3, 4, 1, 8, 0)
-        eo = @(0, 0, 0,  0, 1, 0,  1, 0, 1, 0, 1, 0)
-    }
+$global:IICubeMoves.x = [IICubeState]@{
+    cc = @(1, 5, 2, 0, 4, 3)
+    cp = @(3, 2, 6, 7, 0, 1, 5, 4)
+    co = @(2, 1, 2, 1, 1, 2, 1, 2)
+    ep = @(7, 5, 9, 11, 6, 2, 10, 3, 4, 1, 8, 0)
+    eo = @(0, 0, 0,  0, 1, 0,  1, 0, 1, 0, 1, 0)
+}
 
-    "y" = [IICubeState]@{
-        cc = @(0, 2, 3, 4, 1, 5)
-        cp = @(3, 0, 1, 2, 7, 4, 5, 6)
-        co = @(0) * 8
-        ep = @(3, 0, 1, 2, 7, 4, 5, 6, 11, 8, 9, 10)
-        eo = @(1, 1, 1, 1, 0, 0, 0, 0,  0, 0, 0,  0)
-    }
+$global:IICubeMoves.y = [IICubeState]@{
+    cc = @(0, 2, 3, 4, 1, 5)
+    cp = @(3, 0, 1, 2, 7, 4, 5, 6)
+    co = @(0) * 8
+    ep = @(3, 0, 1, 2, 7, 4, 5, 6, 11, 8, 9, 10)
+    eo = @(1, 1, 1, 1, 0, 0, 0, 0,  0, 0, 0,  0)
+}
 
-    "U" = [IICubeState]@{
-        cc = @(0..5)
-        cp = @(3, 0, 1, 2, 4, 5, 6, 7)
-        co = @(0) * 8
-        ep = @(0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11)
-        eo = @(0) * 12
-    }
+$global:IICubeMoves.U = [IICubeState]@{
+    cc = @(0..5)
+    cp = @(3, 0, 1, 2, 4, 5, 6, 7)
+    co = @(0) * 8
+    ep = @(0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11)
+    eo = @(0) * 12
 }
 
 $Solved = [IICubeState]::new()
 
-$CubeMoves["z"] = $Solved * "y y y x y"
+$global:IICubeMoves.z = $Solved * "y y y x y"
 
-$CubeMoves["D"] = $Solved * "x x U x x"
-$CubeMoves["L"] = $Solved * "z U z z z"
-$CubeMoves["R"] = $Solved * "z z z U z"
-$CubeMoves["F"] = $Solved * "x U x x x"
-$CubeMoves["B"] = $Solved * "x x x U x"
+$global:IICubeMoves.D = $Solved * "x x U x x"
+$global:IICubeMoves.L = $Solved * "z U z z z"
+$global:IICubeMoves.R = $Solved * "z z z U z"
+$global:IICubeMoves.F = $Solved * "x U x x x"
+$global:IICubeMoves.B = $Solved * "x x x U x"
 
-$CubeMoves["M"] = $Solved * "x x x R L L L"
-$CubeMoves["E"] = $Solved * "y y y U D D D"
-$CubeMoves["S"] = $Solved * "z F F F B"
+$global:IICubeMoves.M = $Solved * "x x x R L L L"
+$global:IICubeMoves.E = $Solved * "y y y U D D D"
+$global:IICubeMoves.S = $Solved * "z F F F B"
 
-$CubeMoves["Uw"] = $Solved * "U E E E"
-$CubeMoves["Fw"] = $Solved * "F S"
-$CubeMoves["Rw"] = $Solved * "R M M M"
-$CubeMoves["Bw"] = $Solved * "B S S S"
-$CubeMoves["Lw"] = $Solved * "L M"
-$CubeMoves["Dw"] = $Solved * "D E"
+$global:IICubeMoves.u = $Solved * "U E E E"
+$global:IICubeMoves.f = $Solved * "F S"
+$global:IICubeMoves.r = $Solved * "R M M M"
+$global:IICubeMoves.b = $Solved * "B S S S"
+$global:IICubeMoves.l = $Solved * "L M"
+$global:IICubeMoves.d = $Solved * "D E"
 
-$CubeMoves.Keys.Clone().foreach({
-    $CubeMoves[$_ + "2"] = $CubeMoves[$_] * $CubeMoves[$_]
-    $CubeMoves[$_ + "'"] = $CubeMoves[$_ + "2"] * $CubeMoves[$_]
+@("u", "f", "r", "b", "l", "d").foreach({
+    $global:IICubeMoves[$_.ToUpper() + "w"] = $global:IICubeMoves[$_]
 })
 
+$global:IICubeMoves.Keys.Clone().foreach({
+    $global:IICubeMoves[$_ + "2"] = $global:IICubeMoves[$_] * $global:IICubeMoves[$_]
+    $global:IICubeMoves[$_ + "'"] = $global:IICubeMoves[$_ + "2"] * $global:IICubeMoves[$_]
+})
