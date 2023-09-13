@@ -1,4 +1,4 @@
-$psfiles = @("cube.ps1")
+$psfiles = @("cube.ps1", "move.ps1")
 
 $psfiles = $psfiles.foreach({ "$PSScriptRoot\$_" })
 $files = @(Get-ChildItem -Path $psfiles -ErrorAction SilentlyContinue)
