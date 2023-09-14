@@ -7,6 +7,16 @@ BeforeAll {
 
 
 Describe "IICubeState" {
+    It "比較は正しいか？" {
+        $c1 = New-IICube
+        $c2 = New-IICube
+
+        $c1 -eq $c2 | Should -Be $true
+        $c2.eo[11] = 1
+        $c1 -eq $c2 | Should -Be $false
+    }
+
+
     It "スクランブルしたときに正しく変更されるか？" {
         $cube = New-IICube
         [string]$scramble = "U' F' D2 R U2 R' U2 F2 R D2 L2 D2 R' B U' L' B2 D2 B2 U2"

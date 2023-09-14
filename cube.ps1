@@ -94,11 +94,11 @@ class IICubeState : System.IEquatable[Object] {
 
 
     [bool] Equals([Object] $obj) {
-        return (Compare-Object $this.cc $obj.cc -SyncWindow 0) -eq 0 &&
-               (Compare-Object $this.cp $obj.cp -SyncWindow 0) -eq 0 &&
-               (Compare-Object $this.co $obj.co -SyncWindow 0) -eq 0 &&
-               (Compare-Object $this.ep $obj.ep -SyncWindow 0) -eq 0 &&
-               (Compare-Object $this.eo $obj.eo -SyncWindow 0) -eq 0
+        return (Compare-Object $this.cc $obj.cc -SyncWindow 0).Length -eq 0 -and
+               (Compare-Object $this.cp $obj.cp -SyncWindow 0).Length -eq 0 -and
+               (Compare-Object $this.co $obj.co -SyncWindow 0).Length -eq 0 -and
+               (Compare-Object $this.ep $obj.ep -SyncWindow 0).Length -eq 0 -and
+               (Compare-Object $this.eo $obj.eo -SyncWindow 0).Length -eq 0
     }
 
 
