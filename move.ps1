@@ -41,7 +41,7 @@ function Get-IICubePrimeMove {
 # キューブ動作。この変数に値を設定することで、新しい動作を定義できる。
 # .example
 # PS> $global:IICubeMoves["sexy-move"] = $solved * "R U R' U'"
-$global:IICubeMoves = [System.Collections.Hashtable]::new()
+$global:IICubeMoves = [System.Collections.Generic.Dictionary[string, IICubeState]]::new()
 
 $global:IICubeMoves.x = [IICubeState]@{
     cc = @(1, 5, 2, 0, 4, 3)

@@ -11,53 +11,6 @@ enum CubeColor {
     Yellow
 }
 
-# センターピース色
-$CenterColors = @(
-    [CubeColor]::White,
-    [CubeColor]::Green,
-    [CubeColor]::Red,
-    [CubeColor]::Blue,
-    [CubeColor]::Orange,
-    [CubeColor]::Yellow
-)
-
-# コーナーピース色
-$CornerColors = @(
-    @([CubeColor]::White, [CubeColor]::Blue, [CubeColor]::Orange),
-    @([CubeColor]::White, [CubeColor]::Red, [CubeColor]::Blue),
-    @([CubeColor]::White, [CubeColor]::Green, [CubeColor]::Red),
-    @([CubeColor]::White, [CubeColor]::Orange, [CubeColor]::Green),
-    @([CubeColor]::Yellow, [CubeColor]::Orange, [CubeColor]::Blue),
-    @([CubeColor]::Yellow, [CubeColor]::Blue, [CubeColor]::Red),
-    @([CubeColor]::Yellow, [CubeColor]::Red, [CubeColor]::Green),
-    @([CubeColor]::Yellow, [CubeColor]::Green, [CubeColor]::Orange)
-)
-
-# エッジピース色
-$EdgeColors = @(
-    @([CubeColor]::Blue, [CubeColor]::Orange),
-    @([CubeColor]::Blue, [CubeColor]::Red),
-    @([CubeColor]::Green, [CubeColor]::Red),
-    @([CubeColor]::Green, [CubeColor]::Orange),
-    @([CubeColor]::White, [CubeColor]::Blue),
-    @([CubeColor]::White, [CubeColor]::Red),
-    @([CubeColor]::White, [CubeColor]::Green),
-    @([CubeColor]::White, [CubeColor]::Orange),
-    @([CubeColor]::Yellow, [CubeColor]::Blue),
-    @([CubeColor]::Yellow, [CubeColor]::Red),
-    @([CubeColor]::Yellow, [CubeColor]::Green),
-    @([CubeColor]::Yellow, [CubeColor]::Orange)
-)
-
-$CubeCharColor = @(
-    @{ Char = "W" ; Color = "White" },
-    @{ Char = "G" ; Color = "DarkGreen" },
-    @{ Char = "R" ; Color = "DarkRed" },
-    @{ Char = "B" ; Color = "Blue" },
-    @{ Char = "O" ; Color = "Magenta" },
-    @{ Char = "Y" ; Color = "DarkYellow" }
-)
-
 
 class IICubeState : System.IEquatable[Object] {
     [int[]]$cc  # センターカラー。@(上, 前, 右, 裏, 左, 下)
@@ -66,6 +19,53 @@ class IICubeState : System.IEquatable[Object] {
     [int[]]$ep  # エッジ位置
     [int[]]$eo  # エッジ方向
 
+
+    # センターピース色
+    static $CenterColors = @(
+        [CubeColor]::White,
+        [CubeColor]::Green,
+        [CubeColor]::Red,
+        [CubeColor]::Blue,
+        [CubeColor]::Orange,
+        [CubeColor]::Yellow
+    )
+
+    # コーナーピース色
+    static $CornerColors = @(
+        @([CubeColor]::White, [CubeColor]::Blue, [CubeColor]::Orange),
+        @([CubeColor]::White, [CubeColor]::Red, [CubeColor]::Blue),
+        @([CubeColor]::White, [CubeColor]::Green, [CubeColor]::Red),
+        @([CubeColor]::White, [CubeColor]::Orange, [CubeColor]::Green),
+        @([CubeColor]::Yellow, [CubeColor]::Orange, [CubeColor]::Blue),
+        @([CubeColor]::Yellow, [CubeColor]::Blue, [CubeColor]::Red),
+        @([CubeColor]::Yellow, [CubeColor]::Red, [CubeColor]::Green),
+        @([CubeColor]::Yellow, [CubeColor]::Green, [CubeColor]::Orange)
+    )
+
+    # エッジピース色
+    static $EdgeColors = @(
+        @([CubeColor]::Blue, [CubeColor]::Orange),
+        @([CubeColor]::Blue, [CubeColor]::Red),
+        @([CubeColor]::Green, [CubeColor]::Red),
+        @([CubeColor]::Green, [CubeColor]::Orange),
+        @([CubeColor]::White, [CubeColor]::Blue),
+        @([CubeColor]::White, [CubeColor]::Red),
+        @([CubeColor]::White, [CubeColor]::Green),
+        @([CubeColor]::White, [CubeColor]::Orange),
+        @([CubeColor]::Yellow, [CubeColor]::Blue),
+        @([CubeColor]::Yellow, [CubeColor]::Red),
+        @([CubeColor]::Yellow, [CubeColor]::Green),
+        @([CubeColor]::Yellow, [CubeColor]::Orange)
+    )
+
+    static $CubeCharColor = @(
+        @{ Char = "W" ; Color = "White" },
+        @{ Char = "G" ; Color = "DarkGreen" },
+        @{ Char = "R" ; Color = "DarkRed" },
+        @{ Char = "B" ; Color = "Blue" },
+        @{ Char = "O" ; Color = "Magenta" },
+        @{ Char = "Y" ; Color = "DarkYellow" }
+    )
 
     <#
         .synopsis
@@ -165,7 +165,7 @@ class IICubeState : System.IEquatable[Object] {
         .outputs
         動作を適用したあとのキューブの状態
     #>
-    [IICubeState] ApplyMove([IICubeState]$Move) {
+    [IICubeState] ApplyMove($Move) {
         $cube = @{}
 
         $cube.cc = $Move.cc.foreach({$this.cc[$_]})
@@ -208,15 +208,15 @@ class IICubeState : System.IEquatable[Object] {
     [CubeColor[]] GetUpColors() {
         $colors = @([CubeColor]::White) * 9
 
-        $colors[0] = $script:CornerColors[$this.cp[0]][$this.co[0]]
-        $colors[1] = $script:EdgeColors[$this.ep[4]][$this.eo[4]]
-        $colors[2] = $script:CornerColors[$this.cp[1]][$this.co[1]]
-        $colors[3] = $script:EdgeColors[$this.ep[7]][$this.eo[7]]
-        $colors[4] = $script:CenterColors[$this.cc[0]]
-        $colors[5] = $script:EdgeColors[$this.ep[5]][$this.eo[5]]
-        $colors[6] = $script:CornerColors[$this.cp[3]][$this.co[3]]
-        $colors[7] = $script:EdgeColors[$this.ep[6]][$this.eo[6]]
-        $colors[8] = $script:CornerColors[$this.cp[2]][$this.co[2]]
+        $colors[0] = [IICubeState]::CornerColors[$this.cp[0]][$this.co[0]]
+        $colors[1] = [IICubeState]::EdgeColors[$this.ep[4]][$this.eo[4]]
+        $colors[2] = [IICubeState]::CornerColors[$this.cp[1]][$this.co[1]]
+        $colors[3] = [IICubeState]::EdgeColors[$this.ep[7]][$this.eo[7]]
+        $colors[4] = [IICubeState]::CenterColors[$this.cc[0]]
+        $colors[5] = [IICubeState]::EdgeColors[$this.ep[5]][$this.eo[5]]
+        $colors[6] = [IICubeState]::CornerColors[$this.cp[3]][$this.co[3]]
+        $colors[7] = [IICubeState]::EdgeColors[$this.ep[6]][$this.eo[6]]
+        $colors[8] = [IICubeState]::CornerColors[$this.cp[2]][$this.co[2]]
 
         return $colors
     }
@@ -243,7 +243,7 @@ class IICubeState : System.IEquatable[Object] {
 
 
     WriteChar([CubeColor]$Color) {
-        $obj = $script:CubeCharColor[$Color]
+        $obj = [IICubeState]::CubeCharColor[$Color]
         Write-Host $obj.Char -ForegroundColor $obj.Color -NoNewLIne
     }
 
